@@ -53,7 +53,7 @@ function App() {
   useMotionValueEvent(x, "change", (e) => console.log(e));
   useMotionValueEvent(rotate, "change", (e) => console.log(e));
   return (
-    <Wrapper>
+    <Wrapper style={{ backgroundColor: bgColor }}>
       {/* x값을 대입 시킬 수 있음. */}
       <Box style={{ x: x, rotateZ: rotate }} drag={"x"} dragSnapToOrigin />
     </Wrapper>
