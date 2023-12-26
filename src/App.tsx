@@ -1,24 +1,18 @@
-import { Variants, motion } from "framer-motion";
-import React, { useRef } from "react";
+import {
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "framer-motion";
+
 import styled from "styled-components";
 
-const Wrapper = styled.div`
+const Wrapper = styled(motion.div)`
   display: flex;
   height: 100vh;
   width: 100vw;
   justify-content: center;
   align-items: center;
-`;
-
-const BiggerBox = styled.div`
-  width: 600px;
-  height: 600px;
-  background-color: #3498db;
-  border-radius: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden; // bigBox 영역에서 넘치면 나간만큼 숨겨줌
 `;
 
 const Box = styled(motion.div)`
@@ -49,21 +43,19 @@ const boxVars = {
 };
 
 function App() {
-  const biggerBoxRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  // useTransForm은 3개의 인자를 필요로 함.
+  // 변할 함수, 변할 값, 그 값에 도달했을 때 얻은 값
+  const rotate = useTransform(x, [-800, 800], [-360, 360]);
+  const bgColor = useTransform(x, [-800, 800], ["#f1c40f", "#d35400"]);
+
+  useMotionValueEvent(bgColor, "change", (e) => console.log(e));
+  useMotionValueEvent(x, "change", (e) => console.log(e));
+  useMotionValueEvent(rotate, "change", (e) => console.log(e));
   return (
     <Wrapper>
-      <BiggerBox ref={biggerBoxRef}>
-        <Box
-          drag
-          dragConstraints={biggerBoxRef}
-          dragSnapToOrigin
-          dragElastic={0.5}
-          variants={boxVars}
-          whileHover={"hover"}
-          whileTap={"tab"}
-          whileDrag={"drag"}
-        />
-      </BiggerBox>
+      {/* x값을 대입 시킬 수 있음. */}
+      <Box style={{ x: x, rotateZ: rotate }} drag={"x"} dragSnapToOrigin />
     </Wrapper>
   );
 }
