@@ -27,42 +27,57 @@ const Box = styled(motion.div)`
 `;
 
 const boxVars = {
-  invisible: {
-    x: 500,
+  // 함수 형태로 변경하고 해당 값일 때 애니메이션을 변경할 수 있음.
+  entry: (isBack: boolean) => ({
+    x: isBack ? -500 : 500,
     opacity: 0,
     scale: 0,
-  },
-  visible: {
+    transition: {
+      duration: 1,
+    },
+  }),
+  center: {
     x: 0,
     opacity: 1,
     scale: 1,
+    transition: {
+      duration: 1,
+    },
   },
-  exit: { x: -500, opacity: 0, scale: 0 },
+  exit: (isBack: boolean) => ({ x: isBack ? 500 : -500, opacity: 0, scale: 0 }),
 };
 
 function App() {
   const [visible, setVisible] = useState(1);
+  const [isBack, setIsBack] = useState(false);
   const next = () => {
+    setIsBack(false);
     setVisible((prev) => (prev === 9 ? (prev = 1) : prev + 1));
   };
+  const prev = () => {
+    setIsBack(true);
+    setVisible((prev) => (prev === 1 ? (prev = 9) : prev - 1));
+  };
+  console.log(isBack);
+
   return (
     <Wrapper>
-      <AnimatePresence>
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) =>
-          i === visible ? (
-            <Box
-              variants={boxVars}
-              initial="invisible"
-              animate="visible"
-              exit="exit"
-              key={i}
-            >
-              {i}
-            </Box>
-          ) : null
-        )}
+      {/* 커스텀 값을 보내줌 */}
+      <AnimatePresence mode="wait" custom={isBack}>
+        <Box
+          // 커스텀 값을 보내줌
+          custom={isBack}
+          variants={boxVars}
+          initial="entry"
+          animate="center"
+          exit="exit"
+          key={visible} // state의 값이 변하면서 새로운 컴포넌트가 생겼다고 생각함.
+        >
+          {visible}
+        </Box>
       </AnimatePresence>
       <button onClick={next}>next</button>
+      <button onClick={prev}>prev</button>
     </Wrapper>
   );
 }
