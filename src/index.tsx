@@ -63,7 +63,7 @@ box-sizing: border-box;
 body{
 // main.tsx에 themeProvider로 감싸져있기 때문에 사용가능 함
 font-family: sans-serif;
-background:linear-gradient(135deg,rgb(238, 0, 153),rgb(221, 0, 238));
+background:linear-gradient(135deg,rgb(52, 73, 94),rgb(44, 62, 80));
 color: black
 }
 a{
