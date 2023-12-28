@@ -12,10 +12,22 @@ const Wrapper = styled(motion.div)`
   align-items: center;
 `;
 
+const Grid = styled.div`
+  display: grid;
+  width: 70vh;
+  grid-template-columns: repeat(3, 1fr);
+  // 띄어쓰기 하면 안됨
+  div:first-child,
+  div:last-child {
+    grid-column: span 2;
+  }
+  gap: 10px;
+`;
+
 const Box = styled(motion.div)`
   // position: absolute;
-  top: 100px;
-  width: 200px;
+
+  //width: 200px;
   height: 200px;
   background-color: rgb(255, 255, 255);
   border-radius: 40px;
@@ -26,36 +38,60 @@ const Box = styled(motion.div)`
   align-items: center;
 `;
 
-const Circle = styled(motion.div)`
-  background-color: #bdc3c7;
-  height: 100px;
-  width: 100px;
-  // border-radius: 50px;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.06);
+const Overlay = styled(motion.div)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
-const boxVars = {};
+const overlayVars = {
+  initial: {
+    backgroundColor: "rgba(0, 0, 0, 0)",
+  },
+  animate: {
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  exit: {
+    backgroundColor: "rgba(0, 0, 0, 0)",
+  },
+};
 
 function App() {
-  const [clicked, setClicked] = useState(false);
-  const toggleClicked = () => {
-    setClicked((prev) => !prev);
-  };
+  const [id, setId] = useState<string | null>(null);
+
   return (
-    <Wrapper onClick={toggleClicked}>
-      <Box>
-        {clicked ? (
-          <Circle
-            layoutId="circle"
-            style={{ borderRadius: "50px", scale: 0.5 }}
-          />
-        ) : null}
-      </Box>
-      <Box>
-        {!clicked ? (
-          <Circle layoutId="circle" style={{ borderRadius: "0px", scale: 1 }} />
-        ) : null}
-      </Box>
+    <Wrapper>
+      <Grid>
+        {["1", "2", "3", "4"].map((n) => (
+          // layoutId는 string만 들어올 수 있음.
+          <Box onClick={() => setId(n)} key={n} layoutId={n}>
+            {n}
+          </Box>
+        ))}
+      </Grid>
+      {id ? ( // 전체에 조건문을 주면 버그 사라짐.
+        <AnimatePresence>
+          (
+          <Overlay
+            onClick={() => setId(null)}
+            variants={overlayVars}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            {/* id state로 layoutId를 일치시킬 수 있음.  
+              똑같은 layoutId를 가진 컴포넌트가 이동했기 때문에 애니메이션이 작동 됨. 
+            */}
+            <Box style={{ width: 400, height: 200 }} layoutId={id}>
+              {id}
+            </Box>
+          </Overlay>
+          )
+        </AnimatePresence>
+      ) : null}
     </Wrapper>
   );
 }
